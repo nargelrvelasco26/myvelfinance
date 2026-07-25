@@ -633,79 +633,77 @@ export default function DebtMonitoring() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition shrink-0"
               title="Back to Dashboard"
             >
               <ArrowLeft size={20} />
             </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Debt Monitoring</h1>
-              <p className="text-gray-600 text-sm mt-1">{debts.length} accounts</p>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Debt Monitoring</h1>
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">{debts.length} accounts</p>
             </div>
+            <button
+              onClick={openAdd}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-3 sm:px-4 py-2 text-sm font-medium text-white transition shrink-0"
+            >
+              <Plus size={16} /> <span className="hidden sm:inline">Add Record</span>
+            </button>
           </div>
-          <div className="flex items-center gap-3">
-            {selectedIds.size > 0 && (
-              <>
-                <span className="text-sm text-white bg-indigo-600 px-3 py-1 rounded-lg">
-                  {selectedIds.size} selected
-                </span>
-                <button
-                  onClick={openBulkHistory}
-                  className="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-medium text-white transition"
-                  title="View payment history for selected debts"
-                >
-                  <History size={16} /> Debt Payment History
-                </button>
-              </>
-            )}
+
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg">
+              <span className="text-xs sm:text-sm text-indigo-900 font-medium">
+                {selectedIds.size} selected
+              </span>
+              <button
+                onClick={openBulkHistory}
+                className="ml-auto inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium text-white transition"
+              >
+                <History size={14} /> <span className="hidden sm:inline">Debt Payment History</span><span className="sm:hidden">History</span>
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setCalendarModalOpen(true)}
               disabled={debts.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="View payment schedule calendar"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Calendar size={16} /> Calendar
+              <Calendar size={14} /> <span className="hidden sm:inline">Calendar</span>
             </button>
             <button
               onClick={handlePrint}
               disabled={debts.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-200 hover:bg-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Print selected or all records"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Printer size={16} /> Print
+              <Printer size={14} /> <span className="hidden sm:inline">Print</span>
             </button>
             <button
               onClick={exportToExcel}
               disabled={debts.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Export selected or all records to Excel (CSV)"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-green-600 hover:bg-green-700 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FileDown size={16} /> Excel
+              <FileDown size={14} /> <span className="hidden sm:inline">Excel</span>
             </button>
             <button
               onClick={exportToPDF}
               disabled={debts.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-red-600 hover:bg-red-700 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Export selected or all records to PDF"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-red-600 hover:bg-red-700 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FileDown size={16} /> PDF
-            </button>
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-sm font-medium text-white transition"
-            >
-              <Plus size={16} /> Add Record
+              <FileDown size={14} /> <span className="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow max-h-[calc(100vh-250px)]">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto rounded-lg border border-gray-200 bg-white shadow max-h-[calc(100vh-250px)]">
           <table className="min-w-full divide-y divide-gray-200 text-sm">
             <thead className="bg-gray-100 text-left text-xs font-medium uppercase tracking-wide text-gray-700 sticky top-0 z-10">
               <tr>
@@ -950,6 +948,145 @@ export default function DebtMonitoring() {
           </table>
         </div>
 
+        {/* Mobile Card View */}
+        <div className="lg:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+              Loading…
+            </div>
+          ) : debts.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+              No debts yet. Click "Add Record" to start.
+            </div>
+          ) : (
+            <>
+              {sortedDebts.map((d) => (
+                <div key={d.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(d.id)}
+                        onChange={() => toggleSelect(d.id)}
+                        className="mt-1 w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 text-base mb-1">{d.origin}</h3>
+                        {d.merchant && (
+                          <p className="text-sm text-gray-600 mb-2">{d.merchant}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 ml-2">
+                      <button
+                        onClick={() => openPayment(d)}
+                        className="p-2 rounded text-green-600 hover:bg-green-50 transition"
+                        title="Make Payment"
+                      >
+                        <DollarSign size={18} />
+                      </button>
+                      <button
+                        onClick={() => openHistory(d)}
+                        className="p-2 rounded text-purple-600 hover:bg-purple-50 transition"
+                        title="Payment History"
+                      >
+                        <History size={18} />
+                      </button>
+                      <button
+                        onClick={() => openEdit(d)}
+                        className="p-2 rounded text-blue-600 hover:bg-blue-50 transition"
+                        title="Edit"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(d)}
+                        className="p-2 rounded text-red-600 hover:bg-red-50 transition"
+                        title="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm border-t pt-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-gray-600 font-medium">Current Due:</span>
+                        <p className="text-base font-bold text-gray-900">{usd(d.current_due ?? d.balance_due)}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 font-medium">Monthly:</span>
+                        <p className="text-base font-semibold text-gray-900">{usd(d.monthly_payment)}</p>
+                      </div>
+                    </div>
+
+                    {d.owner && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Owner:</span>
+                        <span className="text-gray-900">{d.owner}</span>
+                      </div>
+                    )}
+                    {d.collector && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Collector:</span>
+                        <span className="text-gray-900">{d.collector}</span>
+                      </div>
+                    )}
+                    {d.current_creditor && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Creditor:</span>
+                        <span className="text-gray-900">{d.current_creditor}</span>
+                      </div>
+                    )}
+                    {d.account_number && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Account #:</span>
+                        <span className="text-gray-900 font-mono text-xs">{d.account_number}</span>
+                      </div>
+                    )}
+                    <div className="flex items-start">
+                      <span className="text-gray-600 font-medium w-24 shrink-0">Balance:</span>
+                      <span className="text-gray-900">{usd(d.balance_due)}</span>
+                    </div>
+                    {d.payment_due_day && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Due Day:</span>
+                        <span className="text-gray-900">{d.payment_due_day}</span>
+                      </div>
+                    )}
+                    {d.pay_from_bank && (
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-24 shrink-0">Bank:</span>
+                        <span className="text-gray-900">{d.pay_from_bank}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Mobile Totals */}
+              <div className="bg-gray-100 rounded-lg p-4 font-medium text-gray-900 border border-gray-300">
+                <h3 className="text-sm font-semibold mb-3 text-gray-700">Totals</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-600">Balance Due:</span>
+                    <p className="text-base font-bold text-gray-900">{usd(totals.balance)}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Current Due:</span>
+                    <p className="text-lg font-bold text-gray-900">{usd(totals.currentDue)}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-gray-600">Monthly Payment:</span>
+                    <p className="text-base font-bold text-gray-900">{usd(totals.monthly)}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         {modalOpen && (
           <DebtModal
             form={form}
@@ -1070,10 +1207,10 @@ function DebtModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-2xl rounded-xl bg-white border border-gray-200 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4">
+      <div className="w-full max-w-2xl rounded-xl bg-white border border-gray-200 shadow-2xl max-h-[95vh] sm:max-h-auto flex flex-col">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-5 py-3 sm:py-4">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">
             {editing ? 'Edit debt' : 'Add debt'}
           </h2>
           <button
@@ -1084,7 +1221,7 @@ function DebtModal({
           </button>
         </div>
 
-        <div className="grid max-h-[70vh] grid-cols-1 gap-4 overflow-y-auto px-5 py-4 sm:grid-cols-2">
+        <div className="grid flex-1 grid-cols-1 gap-3 sm:gap-4 overflow-y-auto px-4 sm:px-5 py-3 sm:py-4 sm:grid-cols-2">
           {text('Origin', 'origin', true)}
           {text('Owner', 'owner')}
           {text('Collector', 'collector')}
@@ -1110,17 +1247,17 @@ function DebtModal({
           </label>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-200 px-5 py-4">
+        <div className="flex justify-end gap-2 sm:gap-3 border-t border-gray-200 px-4 sm:px-5 py-3 sm:py-4">
           <button
             onClick={onClose}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+            className="rounded-lg border border-gray-300 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+            className="rounded-lg bg-indigo-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
           >
             {saving ? 'Saving…' : editing ? 'Save changes' : 'Add debt'}
           </button>
@@ -1160,24 +1297,24 @@ function PaymentModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white border border-gray-200 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Make Payment</h2>
-            <p className="text-sm text-gray-600 mt-1">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4">
+      <div className="w-full max-w-md rounded-xl bg-white border border-gray-200 shadow-2xl max-h-[95vh] sm:max-h-auto flex flex-col">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-5 py-3 sm:py-4">
+          <div className="flex-1 min-w-0 pr-2">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Make Payment</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
               {debt.origin} {debt.merchant ? `— ${debt.merchant}` : ''}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition shrink-0"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="px-5 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4">
           <div className="p-3 bg-gray-50 rounded-lg">
             <p className="text-xs text-gray-600">Current Balance</p>
             <p className="text-2xl font-bold text-gray-900">
@@ -1255,18 +1392,18 @@ function PaymentModal({
           </label>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-200 px-5 py-4">
+        <div className="flex justify-end gap-2 sm:gap-3 border-t border-gray-200 px-4 sm:px-5 py-3 sm:py-4">
           <button
             onClick={onClose}
             disabled={saving}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+            className="rounded-lg border border-gray-300 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onSubmit}
             disabled={saving}
-            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition disabled:opacity-50"
+            className="rounded-lg bg-green-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-green-700 transition disabled:opacity-50"
           >
             {saving ? 'Processing…' : 'Record Payment'}
           </button>
@@ -1727,56 +1864,59 @@ function CalendarModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-blue-600 text-white">
-          <div>
-            <h2 className="text-2xl font-bold">Payment Schedule Calendar</h2>
-            <p className="text-blue-100 text-sm mt-1">View payment due dates for all debts</p>
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white">
+          <div className="flex-1 min-w-0 pr-2">
+            <h2 className="text-lg sm:text-2xl font-bold">Payment Schedule Calendar</h2>
+            <p className="text-blue-100 text-xs sm:text-sm mt-1 hidden sm:block">View payment due dates for all debts</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-lg transition"
+            className="p-2 hover:bg-white/20 rounded-lg transition shrink-0"
             title="Close"
           >
-            <X size={24} />
+            <X size={20} className="sm:hidden" />
+            <X size={24} className="hidden sm:block" />
           </button>
         </div>
 
         {/* Calendar Controls */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-gray-50">
+        <div className="flex items-center justify-between border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 bg-gray-50">
           <button
             onClick={() => onMonthChange('prev')}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+            className="px-2 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium text-sm"
           >
-            ← Previous
+            <span className="hidden sm:inline">← Previous</span>
+            <span className="sm:hidden">←</span>
           </button>
-          <div className="flex items-center gap-3">
-            <h3 className="text-xl font-bold text-gray-900">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h3 className="text-base sm:text-xl font-bold text-gray-900">
               {monthNames[date.getMonth()]} {date.getFullYear()}
             </h3>
             <button
               onClick={onToday}
-              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+              className="px-2 sm:px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm font-medium"
             >
               Today
             </button>
           </div>
           <button
             onClick={() => onMonthChange('next')}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+            className="px-2 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium text-sm"
           >
-            Next →
+            <span className="hidden sm:inline">Next →</span>
+            <span className="sm:hidden">→</span>
           </button>
         </div>
 
         {/* Calendar Grid */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-7 gap-2">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-6">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {/* Day headers */}
             {dayNames.map(day => (
-              <div key={day} className="text-center font-bold text-gray-700 py-2 bg-gray-100 rounded">
+              <div key={day} className="text-center font-bold text-gray-700 py-1 sm:py-2 bg-gray-100 rounded text-xs sm:text-sm">
                 {day}
               </div>
             ))}
@@ -1784,7 +1924,7 @@ function CalendarModal({
             {/* Calendar days */}
             {calendarDays.map((day, index) => {
               if (day === null) {
-                return <div key={`empty-${index}`} className="border border-gray-200 rounded-lg p-2 bg-gray-50 min-h-[120px]"></div>;
+                return <div key={`empty-${index}`} className="border border-gray-200 rounded-lg p-1 sm:p-2 bg-gray-50 min-h-[60px] sm:min-h-[120px]"></div>;
               }
 
               const debtsForDay = getDebtsForDay(day);
@@ -1793,7 +1933,7 @@ function CalendarModal({
               return (
                 <div
                   key={day}
-                  className={`border rounded-lg p-2 min-h-[120px] transition ${
+                  className={`border rounded-lg p-1 sm:p-2 min-h-[60px] sm:min-h-[120px] transition ${
                     isToday
                       ? 'border-blue-500 bg-blue-50 shadow-md'
                       : debtsForDay.length > 0
@@ -1801,34 +1941,39 @@ function CalendarModal({
                       : 'border-gray-200 bg-white'
                   }`}
                 >
-                  <div className={`text-sm font-bold mb-2 ${
+                  <div className={`text-xs sm:text-sm font-bold mb-1 sm:mb-2 ${
                     isToday ? 'text-blue-700' : debtsForDay.length > 0 ? 'text-orange-700' : 'text-gray-700'
                   }`}>
                     {day}
-                    {isToday && <span className="ml-1 text-xs">(Today)</span>}
+                    {isToday && <span className="ml-1 text-xs hidden sm:inline">(Today)</span>}
                   </div>
 
                   {debtsForDay.length > 0 && (
                     <div className="space-y-1">
-                      {debtsForDay.map(debt => (
+                      {debtsForDay.slice(0, 2).map(debt => (
                         <div
                           key={debt.id}
-                          className="text-xs bg-white border border-orange-200 rounded p-1.5 hover:shadow-sm transition"
+                          className="text-xs bg-white border border-orange-200 rounded p-1 sm:p-1.5 hover:shadow-sm transition"
                         >
-                          <div className="font-semibold text-gray-800 truncate" title={debt.origin}>
+                          <div className="font-semibold text-gray-800 truncate text-[10px] sm:text-xs" title={debt.origin}>
                             {debt.origin}
                           </div>
-                          <div className="text-gray-600 truncate" title={debt.collector || 'No collector'}>
+                          <div className="text-gray-600 truncate text-[10px] sm:text-xs hidden sm:block" title={debt.collector || 'No collector'}>
                             {debt.collector || 'No collector'}
                           </div>
-                          <div className="font-bold text-orange-600 mt-0.5">
+                          <div className="font-bold text-orange-600 mt-0.5 text-[10px] sm:text-xs">
                             {usd(debt.monthly_payment)}
                           </div>
-                          <div className="text-gray-500">
+                          <div className="text-gray-500 text-[10px] sm:text-xs hidden sm:block">
                             {debt.owner || '—'}
                           </div>
                         </div>
                       ))}
+                      {debtsForDay.length > 2 && (
+                        <div className="text-[10px] sm:text-xs text-gray-500 text-center">
+                          +{debtsForDay.length - 2} more
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1838,24 +1983,24 @@ function CalendarModal({
         </div>
 
         {/* Footer with legend */}
-        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-blue-500 bg-blue-50 rounded"></div>
+        <div className="border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4 bg-gray-50">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-blue-500 bg-blue-50 rounded"></div>
                 <span className="text-gray-700">Today</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-orange-300 bg-orange-50 rounded"></div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-orange-300 bg-orange-50 rounded"></div>
                 <span className="text-gray-700">Payment Due</span>
               </div>
               <div className="text-gray-600">
-                Total debts with due dates: <strong>{debts.filter(d => d.payment_due_day).length}</strong>
+                Total: <strong>{debts.filter(d => d.payment_due_day).length}</strong>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium text-gray-700 transition"
+              className="w-full sm:w-auto px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium text-gray-700 transition text-sm"
             >
               Close
             </button>

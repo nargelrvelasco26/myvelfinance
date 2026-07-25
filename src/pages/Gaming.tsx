@@ -397,56 +397,58 @@ export default function Gaming() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition shrink-0"
               title="Back to Dashboard"
             >
               <ArrowLeft size={20} />
             </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Gaming Transactions</h1>
-              <p className="text-gray-600 text-sm mt-1">{transactions.length} transactions</p>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gaming Transactions</h1>
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">{transactions.length} transactions</p>
             </div>
+            <button
+              onClick={openAdd}
+              className="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-3 sm:px-4 py-2 text-sm font-medium text-white transition shrink-0"
+            >
+              <Plus size={16} /> <span className="hidden sm:inline">Add Transaction</span>
+            </button>
           </div>
-          <div className="flex items-center gap-3">
-            {selectedIds.size > 0 && (
-              <span className="text-sm text-white bg-purple-600 px-3 py-1 rounded-lg">
+
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg">
+              <span className="text-xs sm:text-sm text-purple-900 font-medium">
                 {selectedIds.size} selected
               </span>
-            )}
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handlePrint}
               disabled={transactions.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-200 hover:bg-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Print selected or all records"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Printer size={16} /> Print
+              <Printer size={14} /> <span className="hidden sm:inline">Print</span>
             </button>
             <button
               onClick={exportToExcel}
               disabled={transactions.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Export selected or all records to Excel (CSV)"
+              className="inline-flex items-center gap-1 sm:gap-2 rounded-lg bg-green-600 hover:bg-green-700 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FileDown size={16} /> Excel
-            </button>
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-medium text-white transition"
-            >
-              <Plus size={16} /> Add Transaction
+              <FileDown size={14} /> <span className="hidden sm:inline">Excel</span>
             </button>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Start Date
@@ -500,7 +502,8 @@ export default function Gaming() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto max-h-[calc(100vh-350px)] relative">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
@@ -663,6 +666,109 @@ export default function Gaming() {
           </div>
         </div>
 
+        {/* Mobile Card View */}
+        <div className="lg:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+              Loading...
+            </div>
+          ) : filteredAndSortedTransactions.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+              No gaming transactions found. Click "Add Transaction" to get started.
+            </div>
+          ) : (
+            filteredAndSortedTransactions.map((t) => (
+              <div key={t.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(t.id)}
+                      onChange={() => toggleSelect(t.id)}
+                      className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-2 focus:ring-purple-500 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="mb-2">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          t.transaction_ref?.toLowerCase().includes('win')
+                            ? 'bg-green-100 text-green-800'
+                            : t.transaction_ref?.toLowerCase().includes('loss')
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {t.transaction_ref ?? '—'}
+                        </span>
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-base">{t.type_of_wager ?? 'No wager type'}</h3>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 ml-2">
+                    <button
+                      onClick={() => openEdit(t)}
+                      className="p-2 rounded text-blue-600 hover:bg-blue-50 transition"
+                      title="Edit"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      className="p-2 rounded text-red-600 hover:bg-red-50 transition"
+                      title="Delete"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-sm border-t pt-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-gray-600 font-medium">Gross Winnings:</span>
+                      <p className={`text-base font-bold ${
+                        t.transaction_ref?.toLowerCase().includes('win') ? 'text-green-600' : 'text-gray-900'
+                      }`}>
+                        {usd(t.gross_winnings)}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 font-medium">Total Amount:</span>
+                      <p className="text-base font-semibold text-gray-900">{usd(t.total_amount)}</p>
+                    </div>
+                  </div>
+
+                  {t.transaction_dt && (
+                    <div className="flex items-start">
+                      <span className="text-gray-600 font-medium w-24 shrink-0">Date:</span>
+                      <span className="text-gray-900">{t.transaction_dt}</span>
+                    </div>
+                  )}
+
+                  {t.payer_name && (
+                    <div className="flex items-start">
+                      <span className="text-gray-600 font-medium w-24 shrink-0">Payer:</span>
+                      <span className="text-gray-900">{t.payer_name}</span>
+                    </div>
+                  )}
+
+                  {t.winner_name && (
+                    <div className="flex items-start">
+                      <span className="text-gray-600 font-medium w-24 shrink-0">Winner:</span>
+                      <span className="text-gray-900">{t.winner_name}</span>
+                    </div>
+                  )}
+
+                  {t.notes && (
+                    <div className="flex items-start">
+                      <span className="text-gray-600 font-medium w-24 shrink-0">Notes:</span>
+                      <span className="text-gray-700 text-xs">{t.notes}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {modalOpen && (
           <GamingModal
             form={form}
@@ -697,22 +803,23 @@ function GamingModal({
   const isLoss = form.transaction_ref === 'Loss';
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-purple-600 text-white">
-          <h2 className="text-2xl font-bold">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-purple-600 text-white">
+          <h2 className="text-lg sm:text-2xl font-bold">
             {editing ? 'Edit Gaming Transaction' : 'Add Gaming Transaction'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-lg transition"
+            className="p-2 hover:bg-white/20 rounded-lg transition shrink-0"
           >
-            <X size={24} />
+            <X size={20} className="sm:hidden" />
+            <X size={24} className="hidden sm:block" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Transaction Type - Always Shown */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -733,8 +840,8 @@ function GamingModal({
             {/* Loss Form - Simple */}
             {isLoss && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Loss Details</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Loss Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Transaction Date <span className="text-red-500">*</span>
@@ -762,7 +869,7 @@ function GamingModal({
                     />
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Total Amount (Loss) <span className="text-red-500">*</span>
                     </label>
@@ -771,13 +878,13 @@ function GamingModal({
                       step="0.01"
                       value={form.total_amount ?? ''}
                       onChange={(e) => onField('total_amount', e.target.value ? parseFloat(e.target.value) : null)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm sm:text-base"
                       placeholder="0.00"
                       required
                     />
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Notes
                     </label>
@@ -785,7 +892,7 @@ function GamingModal({
                       value={form.notes ?? ''}
                       onChange={(e) => onField('notes', e.target.value || null)}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-sm sm:text-base"
                       placeholder="Additional notes (optional)"
                     />
                   </div>
@@ -798,8 +905,8 @@ function GamingModal({
               <div className="space-y-6">
                 {/* Basic Win Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Win Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Win Information</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Gross Winnings (Box 1) <span className="text-red-500">*</span>
@@ -903,9 +1010,9 @@ function GamingModal({
 
                 {/* Payer Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Payer Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Payer Information</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Payer Name
                       </label>
@@ -917,7 +1024,7 @@ function GamingModal({
                       />
                     </div>
 
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Payer Address
                       </label>
@@ -995,9 +1102,9 @@ function GamingModal({
 
                 {/* Winner Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Winner Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Winner Information</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Winner Name
                       </label>
@@ -1009,7 +1116,7 @@ function GamingModal({
                       />
                     </div>
 
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Winner Address
                       </label>
@@ -1100,8 +1207,8 @@ function GamingModal({
 
                 {/* State Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">State Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">State Information</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         State (Box 13)
@@ -1173,18 +1280,18 @@ function GamingModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
+        <div className="flex justify-end gap-2 sm:gap-3 border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition disabled:opacity-50"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition disabled:opacity-50 text-sm sm:text-base"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={saving || !form.transaction_ref}
-            className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition disabled:opacity-50"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition disabled:opacity-50 text-sm sm:text-base"
           >
             {saving ? 'Saving...' : editing ? 'Update' : 'Add'}
           </button>

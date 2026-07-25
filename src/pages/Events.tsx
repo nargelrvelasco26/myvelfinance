@@ -279,86 +279,86 @@ export default function Events() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+              className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition shrink-0"
               title="Back to Dashboard"
             >
               <ArrowLeft size={20} />
             </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Activities / Events</h1>
-              <p className="text-gray-600 text-sm mt-1">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Events</h1>
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">
                 {viewMode === 'list' ? `${events.length} events` : `${occurrences.length} occurrences`}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-gray-200 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                  viewMode === 'list'
-                    ? 'bg-white text-gray-900 shadow'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Events List
-              </button>
-              <button
-                onClick={() => setViewMode('occurrences')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                  viewMode === 'occurrences'
-                    ? 'bg-white text-gray-900 shadow'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Occurrences
-              </button>
-              <button
-                onClick={() => setViewMode('calendar')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                  viewMode === 'calendar'
-                    ? 'bg-white text-gray-900 shadow'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Calendar
-              </button>
-            </div>
             <button
               onClick={openAdd}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-medium text-white transition"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-2 text-sm font-medium text-white transition shrink-0"
             >
-              <Plus size={16} /> Add Event
+              <Plus size={16} /> <span className="hidden sm:inline">Add Event</span>
+            </button>
+          </div>
+          <div className="flex bg-gray-200 rounded-lg p-1 overflow-x-auto">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition whitespace-nowrap ${
+                viewMode === 'list'
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Events List
+            </button>
+            <button
+              onClick={() => setViewMode('occurrences')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition whitespace-nowrap ${
+                viewMode === 'occurrences'
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Occurrences
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition whitespace-nowrap ${
+                viewMode === 'calendar'
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Calendar
             </button>
           </div>
         </div>
 
         {viewMode === 'occurrences' && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-2">
                 <Calendar size={20} className="text-gray-600" />
                 <label className="text-sm font-medium text-gray-700">Date Range:</label>
               </div>
-              <input
-                type="date"
-                value={dateRange.start}
-                onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="date"
-                value={dateRange.end}
-                onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
+              <div className="flex items-center gap-2 flex-1">
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
+                  className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+                <span className="text-gray-500 text-sm">to</span>
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
+                  className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -373,116 +373,250 @@ export default function Events() {
             getDaysInMonth={getDaysInMonth}
             getFirstDayOfMonth={getFirstDayOfMonth}
           />
-        ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              {viewMode === 'list' ? (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-100 border-b border-gray-200">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Event Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Start Date & Time</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">End Date & Time</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">All Day</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Recurring</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Location</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
+        ) : viewMode === 'list' ? (
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100 border-b border-gray-200">
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-                        Loading...
-                      </td>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Event Name</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Start Date & Time</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">End Date & Time</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">All Day</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Recurring</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Location</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Notes</th>
                     </tr>
-                  ) : events.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
-                        No events found. Click "Add Event" to get started.
-                      </td>
-                    </tr>
-                  ) : (
-                    events.map((event, index) => (
-                      <tr key={event.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openEdit(event)}
-                              className="p-1 hover:bg-blue-100 rounded transition"
-                              title="Edit"
-                            >
-                              <Pencil size={16} className="text-blue-600" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(event.id)}
-                              className="p-1 hover:bg-red-100 rounded transition"
-                              title="Delete"
-                            >
-                              <Trash2 size={16} className="text-red-600" />
-                            </button>
-                          </div>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                          Loading...
                         </td>
-                        <td className="px-4 py-3 font-medium text-gray-900">{event.event_name}</td>
-                        <td className="px-4 py-3 text-gray-700">{formatDateTime(event.starts_at)}</td>
-                        <td className="px-4 py-3 text-gray-700">{formatDateTime(event.ends_at)}</td>
-                        <td className="px-4 py-3">
-                          {event.all_day ? (
-                            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Yes</span>
-                          ) : (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">No</span>
+                      </tr>
+                    ) : events.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                          No events found. Click "Add Event" to get started.
+                        </td>
+                      </tr>
+                    ) : (
+                      events.map((event, index) => (
+                        <tr key={event.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => openEdit(event)}
+                                className="p-1 hover:bg-blue-100 rounded transition"
+                                title="Edit"
+                              >
+                                <Pencil size={16} className="text-blue-600" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(event.id)}
+                                className="p-1 hover:bg-red-100 rounded transition"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} className="text-red-600" />
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 font-medium text-gray-900">{event.event_name}</td>
+                          <td className="px-4 py-3 text-gray-700">{formatDateTime(event.starts_at)}</td>
+                          <td className="px-4 py-3 text-gray-700">{formatDateTime(event.ends_at)}</td>
+                          <td className="px-4 py-3">
+                            {event.all_day ? (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Yes</span>
+                            ) : (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">No</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {event.is_recurring ? (
+                              <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                                {event.recurrence_freq}
+                              </span>
+                            ) : (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">No</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700">{event.location ?? '—'}</td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">{event.notes ?? '—'}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+              {loading ? (
+                <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                  Loading...
+                </div>
+              ) : events.length === 0 ? (
+                <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                  No events found. Click "Add Event" to get started.
+                </div>
+              ) : (
+                events.map((event) => (
+                  <div key={event.id} className="bg-white rounded-lg shadow-md p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 text-lg mb-1">{event.event_name}</h3>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {event.all_day && (
+                            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">All Day</span>
                           )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {event.is_recurring ? (
+                          {event.is_recurring && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
                               {event.recurrence_freq}
                             </span>
-                          ) : (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">No</span>
                           )}
-                        </td>
-                        <td className="px-4 py-3 text-gray-700">{event.location ?? '—'}</td>
-                        <td className="px-4 py-3 text-gray-600 text-xs">{event.notes ?? '—'}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-100 border-b border-gray-200">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Event Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Time</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Location</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {occurrences.length === 0 ? (
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-2">
+                        <button
+                          onClick={() => openEdit(event)}
+                          className="p-2 hover:bg-blue-100 rounded transition"
+                          title="Edit"
+                        >
+                          <Pencil size={18} className="text-blue-600" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(event.id)}
+                          className="p-2 hover:bg-red-100 rounded transition"
+                          title="Delete"
+                        >
+                          <Trash2 size={18} className="text-red-600" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-20 shrink-0">Starts:</span>
+                        <span className="text-gray-900">{formatDateTime(event.starts_at)}</span>
+                      </div>
+                      {event.ends_at && (
+                        <div className="flex items-start">
+                          <span className="text-gray-600 font-medium w-20 shrink-0">Ends:</span>
+                          <span className="text-gray-900">{formatDateTime(event.ends_at)}</span>
+                        </div>
+                      )}
+                      {event.location && (
+                        <div className="flex items-start">
+                          <span className="text-gray-600 font-medium w-20 shrink-0">Location:</span>
+                          <span className="text-gray-900">{event.location}</span>
+                        </div>
+                      )}
+                      {event.notes && (
+                        <div className="flex items-start">
+                          <span className="text-gray-600 font-medium w-20 shrink-0">Notes:</span>
+                          <span className="text-gray-700">{event.notes}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Desktop Table View for Occurrences */}
+            <div className="hidden sm:block bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100 border-b border-gray-200">
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                        No occurrences in selected date range.
-                      </td>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Event Name</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Time</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Location</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">Notes</th>
                     </tr>
-                  ) : (
-                    occurrences.map((occ, index) => (
-                      <tr key={`${occ.event_id}-${index}`} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-900">{occ.event_name}</span>
-                            {occ.is_recurring && (
-                              <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded">
-                                Recurring
-                              </span>
-                            )}
-                          </div>
+                  </thead>
+                  <tbody>
+                    {occurrences.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                          No occurrences in selected date range.
                         </td>
-                        <td className="px-4 py-3 text-gray-700">{formatDate(occ.occurrence_start)}</td>
-                        <td className="px-4 py-3 text-gray-700">
+                      </tr>
+                    ) : (
+                      occurrences.map((occ, index) => (
+                        <tr key={`${occ.event_id}-${index}`} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900">{occ.event_name}</span>
+                              {occ.is_recurring && (
+                                <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded">
+                                  Recurring
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-gray-700">{formatDate(occ.occurrence_start)}</td>
+                          <td className="px-4 py-3 text-gray-700">
+                            {occ.all_day ? (
+                              <span className="text-green-600 font-medium">All Day</span>
+                            ) : (
+                              `${new Date(occ.occurrence_start).toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true,
+                              })}${
+                                occ.occurrence_end
+                                  ? ` - ${new Date(occ.occurrence_end).toLocaleTimeString('en-US', {
+                                      hour: 'numeric',
+                                      minute: '2-digit',
+                                      hour12: true,
+                                    })}`
+                                  : ''
+                              }`
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700">{occ.location ?? '—'}</td>
+                          <td className="px-4 py-3 text-gray-600 text-xs">{occ.notes ?? '—'}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile Card View for Occurrences */}
+            <div className="sm:hidden space-y-3">
+              {occurrences.length === 0 ? (
+                <div className="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                  No occurrences in selected date range.
+                </div>
+              ) : (
+                occurrences.map((occ, index) => (
+                  <div key={`${occ.event_id}-${index}`} className="bg-white rounded-lg shadow-md p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 text-base flex-1">{occ.event_name}</h3>
+                      {occ.is_recurring && (
+                        <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded ml-2">
+                          Recurring
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-16 shrink-0">Date:</span>
+                        <span className="text-gray-900">{formatDate(occ.occurrence_start)}</span>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="text-gray-600 font-medium w-16 shrink-0">Time:</span>
+                        <span className="text-gray-900">
                           {occ.all_day ? (
                             <span className="text-green-600 font-medium">All Day</span>
                           ) : (
@@ -500,17 +634,26 @@ export default function Events() {
                                 : ''
                             }`
                           )}
-                        </td>
-                        <td className="px-4 py-3 text-gray-700">{occ.location ?? '—'}</td>
-                        <td className="px-4 py-3 text-gray-600 text-xs">{occ.notes ?? '—'}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                        </span>
+                      </div>
+                      {occ.location && (
+                        <div className="flex items-start">
+                          <span className="text-gray-600 font-medium w-16 shrink-0">Location:</span>
+                          <span className="text-gray-900">{occ.location}</span>
+                        </div>
+                      )}
+                      {occ.notes && (
+                        <div className="flex items-start">
+                          <span className="text-gray-600 font-medium w-16 shrink-0">Notes:</span>
+                          <span className="text-gray-700">{occ.notes}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
               )}
             </div>
-          </div>
+          </>
         )}
 
         {modalOpen && (
@@ -582,38 +725,40 @@ function CalendarView({
   return (
     <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
       {/* Calendar Controls */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-gray-50">
+      <div className="flex items-center justify-between border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 bg-gray-50">
         <button
           onClick={() => onMonthChange('prev')}
-          className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+          className="px-2 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium text-sm"
         >
-          ← Previous
+          <span className="hidden sm:inline">← Previous</span>
+          <span className="sm:hidden">←</span>
         </button>
-        <div className="flex items-center gap-3">
-          <h3 className="text-xl font-bold text-gray-900">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <h3 className="text-base sm:text-xl font-bold text-gray-900">
             {monthNames[date.getMonth()]} {date.getFullYear()}
           </h3>
           <button
             onClick={onToday}
-            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+            className="px-2 sm:px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm font-medium"
           >
             Today
           </button>
         </div>
         <button
           onClick={() => onMonthChange('next')}
-          className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+          className="px-2 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium text-sm"
         >
-          Next →
+          <span className="hidden sm:inline">Next →</span>
+          <span className="sm:hidden">→</span>
         </button>
       </div>
 
       {/* Calendar Grid */}
-      <div className="p-6">
-        <div className="grid grid-cols-7 gap-2">
+      <div className="p-2 sm:p-6">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {/* Day headers */}
           {dayNames.map(day => (
-            <div key={day} className="text-center font-bold text-gray-700 py-2 bg-gray-100 rounded">
+            <div key={day} className="text-center font-bold text-gray-700 py-1 sm:py-2 bg-gray-100 rounded text-xs sm:text-sm">
               {day}
             </div>
           ))}
@@ -621,7 +766,7 @@ function CalendarView({
           {/* Calendar days */}
           {calendarDays.map((day, index) => {
             if (day === null) {
-              return <div key={`empty-${index}`} className="border border-gray-200 rounded-lg p-2 bg-gray-50 min-h-[120px]"></div>;
+              return <div key={`empty-${index}`} className="border border-gray-200 rounded-lg p-1 sm:p-2 bg-gray-50 min-h-[60px] sm:min-h-[120px]"></div>;
             }
 
             const eventsForDay = getEventsForDay(day);
@@ -630,7 +775,7 @@ function CalendarView({
             return (
               <div
                 key={day}
-                className={`border rounded-lg p-2 min-h-[120px] transition ${
+                className={`border rounded-lg p-1 sm:p-2 min-h-[60px] sm:min-h-[120px] transition ${
                   isToday
                     ? 'border-blue-500 bg-blue-50 shadow-md'
                     : eventsForDay.length > 0
@@ -638,31 +783,31 @@ function CalendarView({
                     : 'border-gray-200 bg-white'
                 }`}
               >
-                <div className={`text-sm font-bold mb-2 ${
+                <div className={`text-xs sm:text-sm font-bold mb-1 sm:mb-2 ${
                   isToday ? 'text-blue-700' : eventsForDay.length > 0 ? 'text-green-700' : 'text-gray-700'
                 }`}>
                   {day}
-                  {isToday && <span className="ml-1 text-xs">(Today)</span>}
+                  {isToday && <span className="ml-1 text-xs hidden sm:inline">(Today)</span>}
                 </div>
 
                 {eventsForDay.length > 0 && (
                   <div className="space-y-1">
-                    {eventsForDay.map((event, idx) => (
+                    {eventsForDay.slice(0, 2).map((event, idx) => (
                       <div
                         key={`${event.event_id}-${idx}`}
-                        className="text-xs bg-white border border-green-200 rounded p-1.5 hover:shadow-sm transition"
+                        className="text-xs bg-white border border-green-200 rounded p-1 sm:p-1.5 hover:shadow-sm transition"
                       >
                         <div className="flex items-center gap-1 mb-0.5">
-                          <div className="font-semibold text-gray-800 truncate flex-1" title={event.event_name}>
+                          <div className="font-semibold text-gray-800 truncate flex-1 text-[10px] sm:text-xs" title={event.event_name}>
                             {event.event_name}
                           </div>
                           {event.is_recurring && (
-                            <span className="text-purple-600" title="Recurring">
+                            <span className="text-purple-600 hidden sm:inline" title="Recurring">
                               ↻
                             </span>
                           )}
                         </div>
-                        <div className="text-gray-600">
+                        <div className="text-gray-600 text-[10px] sm:text-xs hidden sm:block">
                           {event.all_day ? (
                             <span className="text-green-600 font-medium">All Day</span>
                           ) : (
@@ -670,12 +815,17 @@ function CalendarView({
                           )}
                         </div>
                         {event.location && (
-                          <div className="text-gray-500 truncate" title={event.location}>
+                          <div className="text-gray-500 truncate text-[10px] sm:text-xs hidden sm:block" title={event.location}>
                             📍 {event.location}
                           </div>
                         )}
                       </div>
                     ))}
+                    {eventsForDay.length > 2 && (
+                      <div className="text-[10px] sm:text-xs text-gray-500 text-center">
+                        +{eventsForDay.length - 2} more
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -685,22 +835,23 @@ function CalendarView({
       </div>
 
       {/* Footer with legend */}
-      <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-blue-500 bg-blue-50 rounded"></div>
+      <div className="border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4 bg-gray-50">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-blue-500 bg-blue-50 rounded"></div>
             <span className="text-gray-700">Today</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-green-300 bg-green-50 rounded"></div>
-            <span className="text-gray-700">Events Scheduled</span>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-green-300 bg-green-50 rounded"></div>
+            <span className="text-gray-700">Events</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <span className="text-purple-600 font-bold">↻</span>
-            <span className="text-gray-700">Recurring Event</span>
+            <span className="text-gray-700 hidden sm:inline">Recurring Event</span>
+            <span className="text-gray-700 sm:hidden">Recurring</span>
           </div>
-          <div className="text-gray-600 ml-auto">
-            Total events this month: <strong>{occurrences.length}</strong>
+          <div className="text-gray-600 w-full sm:w-auto sm:ml-auto text-center sm:text-left">
+            Total: <strong>{occurrences.length}</strong>
           </div>
         </div>
       </div>
@@ -733,16 +884,17 @@ function EventModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-blue-600 text-white">
-          <h2 className="text-2xl font-bold">{editing ? 'Edit Event' : 'Add Event'}</h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white">
+          <h2 className="text-xl sm:text-2xl font-bold">{editing ? 'Edit Event' : 'Add Event'}</h2>
           <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition">
-            <X size={24} />
+            <X size={20} className="sm:hidden" />
+            <X size={24} className="hidden sm:block" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="space-y-4">
             {/* Event Name */}
             <div>
@@ -753,14 +905,14 @@ function EventModal({
                 type="text"
                 value={form.event_name}
                 onChange={(e) => onField('event_name', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter event name"
                 required
               />
             </div>
 
             {/* Date & Time */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Start Date & Time <span className="text-red-500">*</span>
@@ -769,7 +921,7 @@ function EventModal({
                   type="datetime-local"
                   value={form.starts_at}
                   onChange={(e) => onField('starts_at', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   required
                 />
               </div>
@@ -780,7 +932,7 @@ function EventModal({
                   type="datetime-local"
                   value={form.ends_at ?? ''}
                   onChange={(e) => onField('ends_at', e.target.value || null)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -806,7 +958,7 @@ function EventModal({
                 type="text"
                 value={form.location ?? ''}
                 onChange={(e) => onField('location', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter location"
               />
             </div>
@@ -818,7 +970,7 @@ function EventModal({
                 value={form.notes ?? ''}
                 onChange={(e) => onField('notes', e.target.value || null)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm sm:text-base"
                 placeholder="Additional notes (optional)"
               />
             </div>
@@ -847,14 +999,14 @@ function EventModal({
               </div>
 
               {form.is_recurring && (
-                <div className="space-y-4 pl-6 border-l-2 border-blue-200">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4 pl-3 sm:pl-6 border-l-2 border-blue-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
                       <select
                         value={form.recurrence_freq ?? ''}
                         onChange={(e) => onField('recurrence_freq', (e.target.value as RecurrenceFreq) || null)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                         required
                       >
                         <option value="">Select frequency</option>
@@ -872,7 +1024,7 @@ function EventModal({
                         min="1"
                         value={form.recurrence_interval}
                         onChange={(e) => onField('recurrence_interval', parseInt(e.target.value) || 1)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                       />
                     </div>
                   </div>
@@ -880,13 +1032,13 @@ function EventModal({
                   {form.recurrence_freq === 'weekly' && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Repeat on</label>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {WEEKDAYS.map((day) => (
                           <button
                             key={day.value}
                             type="button"
                             onClick={() => toggleWeekday(day.value)}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition ${
                               (form.recurrence_byweekday ?? []).includes(day.value)
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -899,7 +1051,7 @@ function EventModal({
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
                       <input
@@ -910,7 +1062,7 @@ function EventModal({
                           if (e.target.value) onField('recurrence_count', null);
                         }}
                         disabled={!!form.recurrence_count}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-sm sm:text-base"
                       />
                     </div>
 
@@ -925,7 +1077,7 @@ function EventModal({
                           if (e.target.value) onField('recurrence_until', null);
                         }}
                         disabled={!!form.recurrence_until}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-sm sm:text-base"
                       />
                     </div>
                   </div>
@@ -935,18 +1087,18 @@ function EventModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
+        <div className="flex justify-end gap-2 sm:gap-3 border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition disabled:opacity-50"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition disabled:opacity-50 text-sm sm:text-base"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={saving || !form.event_name.trim() || !form.starts_at}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition disabled:opacity-50"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition disabled:opacity-50 text-sm sm:text-base"
           >
             {saving ? 'Saving...' : editing ? 'Update' : 'Add'}
           </button>

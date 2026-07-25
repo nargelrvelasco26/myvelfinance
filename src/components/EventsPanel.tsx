@@ -100,7 +100,7 @@ export default function EventsPanel() {
             <Calendar className="text-blue-400" size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">Activities/Events</h2>
+            <h2 className="text-2xl font-bold text-white">Events</h2>
             <p className="text-slate-300 text-sm">This Week's Schedule</p>
           </div>
         </div>

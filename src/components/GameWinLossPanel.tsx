@@ -1,246 +1,146 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import { Gamepad2, Plus, Trash2, Trophy, TrendingDown } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect, useMemo } from 'react'
+import { Gamepad2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { listGamingTransactionsByMonth } from '../lib/gaming'
+import type { GamingTransaction } from '../lib/types'
 
-interface GameRecord {
-  id: string
-  game_name: string
-  result: 'win' | 'loss'
-  amount: number
-  date: string
-  notes: string
-  created_at: string
-}
-
-interface GameWinLossPanelProps {
-  userId: string
-}
-
-export default function GameWinLossPanel({ userId }: GameWinLossPanelProps) {
-  const [records, setRecords] = useState<GameRecord[]>([])
+export default function GameWinLossPanel() {
+  const navigate = useNavigate()
+  const [transactions, setTransactions] = useState<GamingTransaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newRecord, setNewRecord] = useState({
-    game_name: '',
-    result: 'win' as 'win' | 'loss',
-    amount: '',
-    date: new Date().toISOString().slice(0, 10),
-    notes: '',
-  })
+
+  // Initialize with current month/year
+  const now = new Date()
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1) // 1-12
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear())
 
   useEffect(() => {
-    fetchRecords()
-  }, [])
+    fetchTransactions()
+  }, [selectedMonth, selectedYear])
 
-  const fetchRecords = async () => {
-    const { data, error } = await supabase
-      .from('game_records')
-      .select('*')
-      .eq('user_id', userId)
-      .order('date', { ascending: false })
-
-    if (!error && data) {
-      setRecords(data)
+  const fetchTransactions = async () => {
+    setLoading(true)
+    try {
+      const data = await listGamingTransactionsByMonth(selectedYear, selectedMonth)
+      setTransactions(data)
+    } catch (err) {
+      console.error('Failed to load gaming transactions:', err)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  const handleAddRecord = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const { error } = await supabase.from('game_records').insert([
-      {
-        user_id: userId,
-        game_name: newRecord.game_name,
-        result: newRecord.result,
-        amount: parseFloat(newRecord.amount),
-        date: newRecord.date,
-        notes: newRecord.notes,
-      },
-    ])
-
-    if (!error) {
-      toast.success('Game record added!')
-      setNewRecord({
-        game_name: '',
-        result: 'win',
-        amount: '',
-        date: new Date().toISOString().slice(0, 10),
-        notes: '',
-      })
-      setShowAddForm(false)
-      fetchRecords()
+  // Navigate to previous month
+  const goToPreviousMonth = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (selectedMonth === 1) {
+      setSelectedMonth(12)
+      setSelectedYear(selectedYear - 1)
     } else {
-      toast.error('Failed to add record')
+      setSelectedMonth(selectedMonth - 1)
     }
   }
 
-  const handleDeleteRecord = async (id: string) => {
-    const { error } = await supabase.from('game_records').delete().eq('id', id)
-    if (!error) {
-      toast.success('Record deleted!')
-      fetchRecords()
+  // Navigate to next month
+  const goToNextMonth = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (selectedMonth === 12) {
+      setSelectedMonth(1)
+      setSelectedYear(selectedYear + 1)
     } else {
-      toast.error('Failed to delete record')
+      setSelectedMonth(selectedMonth + 1)
     }
   }
 
-  const wins = records.filter((r) => r.result === 'win')
-  const losses = records.filter((r) => r.result === 'loss')
-  const totalWins = wins.reduce((sum, r) => sum + r.amount, 0)
-  const totalLosses = losses.reduce((sum, r) => sum + r.amount, 0)
-  const netProfit = totalWins - totalLosses
+  // Calculate Win/Loss based on transaction_ref
+  const summary = useMemo(() => {
+    const monthDate = new Date(selectedYear, selectedMonth - 1)
+    const displayMonth = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+    // Wins: transaction_ref contains "Win" (case insensitive)
+    const wins = transactions.filter(t =>
+      t.transaction_ref?.toLowerCase().includes('win')
+    )
+    const totalWins = wins.reduce((sum, t) => sum + (t.gross_winnings || 0), 0)
+
+    // Losses: transaction_ref contains "Loss" (case insensitive)
+    // Use total_amount for losses instead of gross_winnings
+    const losses = transactions.filter(t =>
+      t.transaction_ref?.toLowerCase().includes('loss')
+    )
+    const totalLosses = losses.reduce((sum, t) => sum + (t.total_amount || 0), 0)
+
+    const netProfit = totalWins - totalLosses
+
+    return { displayMonth, totalWins, totalLosses, netProfit, winCount: wins.length, lossCount: losses.length }
+  }, [transactions, selectedMonth, selectedYear])
 
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-purple-500/20 rounded-lg">
             <Gamepad2 className="text-purple-400" size={24} />
           </div>
-          <h2 className="text-2xl font-bold text-white">Game Win/Loss</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Game Win/Loss</h2>
+          </div>
         </div>
         <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+          onClick={() => navigate('/gaming')}
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition text-sm"
         >
-          <Plus className="text-white" size={20} />
+          View Details
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/30">
-          <div className="flex items-center gap-2 mb-1">
-            <Trophy className="text-green-400" size={16} />
-            <p className="text-xs text-slate-300">Wins</p>
-          </div>
-          <p className="text-xl font-bold text-green-400">${totalWins.toLocaleString()}</p>
-          <p className="text-xs text-slate-400">{wins.length} games</p>
+      {/* Month/Year Picker */}
+      <div className="flex items-center justify-center gap-2 mb-6 bg-white/5 rounded-lg p-2">
+        <button
+          onClick={goToPreviousMonth}
+          className="p-2 hover:bg-white/10 rounded-lg transition"
+          title="Previous Month"
+        >
+          <ChevronLeft size={20} className="text-white" />
+        </button>
+        <div className="flex-1 text-center">
+          <p className="text-lg font-bold text-white">{summary.displayMonth}</p>
         </div>
-        <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingDown className="text-red-400" size={16} />
-            <p className="text-xs text-slate-300">Losses</p>
-          </div>
-          <p className="text-xl font-bold text-red-400">${totalLosses.toLocaleString()}</p>
-          <p className="text-xs text-slate-400">{losses.length} games</p>
-        </div>
-        <div className="col-span-2 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
-          <p className="text-xs text-slate-300 mb-1">Net Profit/Loss</p>
-          <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString()}
-          </p>
-        </div>
+        <button
+          onClick={goToNextMonth}
+          className="p-2 hover:bg-white/10 rounded-lg transition"
+          title="Next Month"
+        >
+          <ChevronRight size={20} className="text-white" />
+        </button>
       </div>
 
-      {showAddForm && (
-        <form onSubmit={handleAddRecord} className="mb-6 p-4 bg-white/5 rounded-lg space-y-3">
-          <input
-            type="text"
-            placeholder="Game name"
-            value={newRecord.game_name}
-            onChange={(e) => setNewRecord({ ...newRecord, game_name: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            required
-          />
-          <select
-            value={newRecord.result}
-            onChange={(e) => setNewRecord({ ...newRecord, result: e.target.value as 'win' | 'loss' })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm"
-            required
-          >
-            <option value="win">Win</option>
-            <option value="loss">Loss</option>
-          </select>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Amount"
-            value={newRecord.amount}
-            onChange={(e) => setNewRecord({ ...newRecord, amount: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            required
-          />
-          <input
-            type="date"
-            value={newRecord.date}
-            onChange={(e) => setNewRecord({ ...newRecord, date: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm"
-            required
-          />
-          <textarea
-            placeholder="Notes (optional)"
-            value={newRecord.notes}
-            onChange={(e) => setNewRecord({ ...newRecord, notes: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            rows={2}
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded text-sm font-semibold"
-            >
-              Add
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowAddForm(false)}
-              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded text-sm"
-            >
-              Cancel
-            </button>
+      {loading ? (
+        <p className="text-slate-400 text-center py-8">Loading...</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-3">
+          <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+            <p className="text-xs text-slate-300 mb-1">Wins</p>
+            <p className="text-2xl font-bold text-white">${summary.totalWins.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className="text-xs text-slate-400 mt-1">{summary.winCount} transactions</p>
           </div>
-        </form>
+          <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/30">
+            <p className="text-xs text-slate-300 mb-1">Losses</p>
+            <p className="text-2xl font-bold text-white">${summary.totalLosses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className="text-xs text-slate-400 mt-1">{summary.lossCount} transactions</p>
+          </div>
+          <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
+            <p className="text-xs text-slate-300 mb-1">Net Profit/Loss</p>
+            <p className={`text-2xl font-bold ${summary.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {summary.netProfit >= 0 ? '+' : ''}${summary.netProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
       )}
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {loading ? (
-          <p className="text-slate-400 text-center py-8">Loading...</p>
-        ) : records.length === 0 ? (
-          <p className="text-slate-400 text-center py-8">No game records yet</p>
-        ) : (
-          records.map((record) => (
-            <div
-              key={record.id}
-              className="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-white font-semibold">{record.game_name}</h3>
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                        record.result === 'win'
-                          ? 'bg-green-500/20 text-green-400'
-                          : 'bg-red-500/20 text-red-400'
-                      }`}
-                    >
-                      {record.result.toUpperCase()}
-                    </span>
-                  </div>
-                  <p
-                    className={`text-2xl font-bold ${
-                      record.result === 'win' ? 'text-green-400' : 'text-red-400'
-                    }`}
-                  >
-                    {record.result === 'win' ? '+' : '-'}${record.amount.toLocaleString()}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleDeleteRecord(record.id)}
-                  className="p-2 hover:bg-white/10 rounded transition"
-                >
-                  <Trash2 className="text-red-400" size={16} />
-                </button>
-              </div>
-              <div className="text-sm space-y-1">
-                <p className="text-slate-400">{new Date(record.date).toLocaleDateString()}</p>
-                {record.notes && <p className="text-slate-300">{record.notes}</p>}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      {!loading && transactions.length === 0 && (
+        <p className="text-slate-400 text-center mt-4 text-sm">Click to add transactions</p>
+      )}
     </div>
   )
 }

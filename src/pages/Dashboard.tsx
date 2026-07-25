@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import DebtMonitoringPanel from "../components/DebtMonitoringPanel";
 import BudgetPanel from "../components/BudgetPanel";
 import GameWinLossPanel from "../components/GameWinLossPanel";
+import EventsPanel from "../components/EventsPanel";
 import toast from "react-hot-toast";
 
 interface DashboardProps {
@@ -39,10 +40,11 @@ export default function Dashboard({ user }: DashboardProps) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <EventsPanel />
           <DebtMonitoringPanel />
-          <BudgetPanel userId={user.id} />
-          <GameWinLossPanel userId={user.id} />
+          <BudgetPanel />
+          <GameWinLossPanel />
         </div>
       </div>
     </div>

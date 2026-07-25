@@ -5,6 +5,9 @@ import type { User } from '@supabase/supabase-js'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import DebtMonitoring from './pages/DebtMonitoring'
+import Budget from './pages/Budget'
+import Gaming from './pages/Gaming'
+import Events from './pages/Events'
 import SetupCheck from './components/SetupCheck'
 
 function App() {
@@ -55,6 +58,9 @@ function App() {
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
       <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
       <Route path="/debt-monitoring" element={user ? <DebtMonitoring /> : <Navigate to="/login" />} />
+      <Route path="/budget" element={user ? <Budget /> : <Navigate to="/login" />} />
+      <Route path="/gaming" element={user ? <Gaming /> : <Navigate to="/login" />} />
+      <Route path="/events" element={user ? <Events /> : <Navigate to="/login" />} />
       <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
     </Routes>
   )

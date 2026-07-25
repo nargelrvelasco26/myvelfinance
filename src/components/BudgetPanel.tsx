@@ -1,225 +1,140 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import { Wallet, Plus, Trash2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect, useMemo } from 'react'
+import { Wallet, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { listBudgetTransactionsByMonth } from '../lib/budget'
+import type { BudgetTransaction } from '../lib/types'
 
-interface Budget {
-  id: string
-  category: string
-  allocated: number
-  spent: number
-  month: string
-  created_at: string
-}
-
-interface BudgetPanelProps {
-  userId: string
-}
-
-export default function BudgetPanel({ userId }: BudgetPanelProps) {
-  const [budgets, setBudgets] = useState<Budget[]>([])
+export default function BudgetPanel() {
+  const navigate = useNavigate()
+  const [transactions, setTransactions] = useState<BudgetTransaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newBudget, setNewBudget] = useState({
-    category: '',
-    allocated: '',
-    spent: '',
-    month: new Date().toISOString().slice(0, 7),
-  })
+
+  // Initialize with current month/year
+  const now = new Date()
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1) // 1-12
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear())
 
   useEffect(() => {
-    fetchBudgets()
-  }, [])
+    fetchTransactions()
+  }, [selectedMonth, selectedYear])
 
-  const fetchBudgets = async () => {
-    const { data, error } = await supabase
-      .from('budgets')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-
-    if (!error && data) {
-      setBudgets(data)
+  const fetchTransactions = async () => {
+    setLoading(true)
+    try {
+      const data = await listBudgetTransactionsByMonth(selectedYear, selectedMonth)
+      setTransactions(data)
+    } catch (err) {
+      console.error('Failed to load budget transactions:', err)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  const handleAddBudget = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const { error } = await supabase.from('budgets').insert([
-      {
-        user_id: userId,
-        category: newBudget.category,
-        allocated: parseFloat(newBudget.allocated),
-        spent: parseFloat(newBudget.spent),
-        month: newBudget.month,
-      },
-    ])
-
-    if (!error) {
-      toast.success('Budget added successfully!')
-      setNewBudget({ category: '', allocated: '', spent: '', month: new Date().toISOString().slice(0, 7) })
-      setShowAddForm(false)
-      fetchBudgets()
+  // Navigate to previous month
+  const goToPreviousMonth = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent navigation to budget page
+    if (selectedMonth === 1) {
+      setSelectedMonth(12)
+      setSelectedYear(selectedYear - 1)
     } else {
-      toast.error('Failed to add budget')
+      setSelectedMonth(selectedMonth - 1)
     }
   }
 
-  const handleDeleteBudget = async (id: string) => {
-    const { error } = await supabase.from('budgets').delete().eq('id', id)
-    if (!error) {
-      toast.success('Budget deleted!')
-      fetchBudgets()
+  // Navigate to next month
+  const goToNextMonth = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent navigation to budget page
+    if (selectedMonth === 12) {
+      setSelectedMonth(1)
+      setSelectedYear(selectedYear + 1)
     } else {
-      toast.error('Failed to delete budget')
+      setSelectedMonth(selectedMonth + 1)
     }
   }
 
-  const totalAllocated = budgets.reduce((sum, budget) => sum + budget.allocated, 0)
-  const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0)
-  const remaining = totalAllocated - totalSpent
+  // Calculate Spent, Income, and Savings for selected month
+  // Transactions are already filtered by the query
+  const summary = useMemo(() => {
+    const monthDate = new Date(selectedYear, selectedMonth - 1)
+    const displayMonth = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+    const spent = transactions
+      .filter(t => t.transaction?.toLowerCase() === 'expense')
+      .reduce((sum, t) => sum + (t.amount ?? 0), 0)
+
+    const income = transactions
+      .filter(t => t.transaction?.toLowerCase() === 'income')
+      .reduce((sum, t) => sum + (t.amount ?? 0), 0)
+
+    const savings = income - spent
+
+    return { displayMonth, spent, income, savings }
+  }, [transactions, selectedMonth, selectedYear])
 
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-blue-500/20 rounded-lg">
             <Wallet className="text-blue-400" size={24} />
           </div>
-          <h2 className="text-2xl font-bold text-white">Budget</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Budget</h2>
+          </div>
         </div>
         <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+          onClick={() => navigate('/budget')}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition text-sm"
         >
-          <Plus className="text-white" size={20} />
+          View Details
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
-          <p className="text-xs text-slate-300 mb-1">Allocated</p>
-          <p className="text-xl font-bold text-white">${totalAllocated.toLocaleString()}</p>
+      {/* Month/Year Picker */}
+      <div className="flex items-center justify-center gap-2 mb-6 bg-white/5 rounded-lg p-2">
+        <button
+          onClick={goToPreviousMonth}
+          className="p-2 hover:bg-white/10 rounded-lg transition"
+          title="Previous Month"
+        >
+          <ChevronLeft size={20} className="text-white" />
+        </button>
+        <div className="flex-1 text-center">
+          <p className="text-lg font-bold text-white">{summary.displayMonth}</p>
         </div>
-        <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
-          <p className="text-xs text-slate-300 mb-1">Spent</p>
-          <p className="text-xl font-bold text-white">${totalSpent.toLocaleString()}</p>
-        </div>
-        <div className="col-span-2 p-3 bg-green-500/10 rounded-lg border border-green-500/30">
-          <p className="text-xs text-slate-300 mb-1">Remaining</p>
-          <p className="text-2xl font-bold text-green-400">${remaining.toLocaleString()}</p>
-        </div>
+        <button
+          onClick={goToNextMonth}
+          className="p-2 hover:bg-white/10 rounded-lg transition"
+          title="Next Month"
+        >
+          <ChevronRight size={20} className="text-white" />
+        </button>
       </div>
 
-      {showAddForm && (
-        <form onSubmit={handleAddBudget} className="mb-6 p-4 bg-white/5 rounded-lg space-y-3">
-          <input
-            type="text"
-            placeholder="Category (e.g., Groceries, Rent)"
-            value={newBudget.category}
-            onChange={(e) => setNewBudget({ ...newBudget, category: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            required
-          />
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Allocated amount"
-            value={newBudget.allocated}
-            onChange={(e) => setNewBudget({ ...newBudget, allocated: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            required
-          />
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Amount spent"
-            value={newBudget.spent}
-            onChange={(e) => setNewBudget({ ...newBudget, spent: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-slate-400 text-sm"
-            required
-          />
-          <input
-            type="month"
-            value={newBudget.month}
-            onChange={(e) => setNewBudget({ ...newBudget, month: e.target.value })}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm"
-            required
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded text-sm font-semibold"
-            >
-              Add
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowAddForm(false)}
-              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded text-sm"
-            >
-              Cancel
-            </button>
+      {loading ? (
+        <p className="text-slate-400 text-center py-8">Loading...</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-3">
+          <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/30">
+            <p className="text-xs text-slate-300 mb-1">Spent</p>
+            <p className="text-2xl font-bold text-white">${summary.spent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </div>
-        </form>
+          <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+            <p className="text-xs text-slate-300 mb-1">Income</p>
+            <p className="text-2xl font-bold text-white">${summary.income.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          </div>
+          <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+            <p className="text-xs text-slate-300 mb-1">Savings</p>
+            <p className={`text-2xl font-bold ${summary.savings >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              ${summary.savings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
       )}
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {loading ? (
-          <p className="text-slate-400 text-center py-8">Loading...</p>
-        ) : budgets.length === 0 ? (
-          <p className="text-slate-400 text-center py-8">No budgets created yet</p>
-        ) : (
-          budgets.map((budget) => {
-            const percentage = (budget.spent / budget.allocated) * 100
-            const isOverBudget = percentage > 100
-
-            return (
-              <div
-                key={budget.id}
-                className="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="text-white font-semibold">{budget.category}</h3>
-                    <p className="text-sm text-slate-400">
-                      {new Date(budget.month + '-01').toLocaleDateString('en-US', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteBudget(budget.id)}
-                    className="p-2 hover:bg-white/10 rounded transition"
-                  >
-                    <Trash2 className="text-red-400" size={16} />
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-300">
-                      ${budget.spent.toLocaleString()} / ${budget.allocated.toLocaleString()}
-                    </span>
-                    <span className={isOverBudget ? 'text-red-400' : 'text-green-400'}>
-                      {percentage.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        isOverBudget ? 'bg-red-500' : 'bg-green-500'
-                      }`}
-                      style={{ width: `${Math.min(percentage, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )
-          })
-        )}
-      </div>
+      {!loading && transactions.length === 0 && (
+        <p className="text-slate-400 text-center mt-4 text-sm">Click to add transactions</p>
+      )}
     </div>
   )
 }

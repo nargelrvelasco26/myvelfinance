@@ -13,8 +13,8 @@ import type { GamingTransaction, GamingTransactionInput } from '../lib/types';
 const EMPTY: GamingTransactionInput = {
   transaction_ref: null,
   type_of_wager: null,
-  gross_winnings: 0,
-  federal_income_tax_withheld: 0,
+  gross_winnings: null,
+  federal_income_tax_withheld: null,
   transaction_dt: null,
   transaction_number: null,
   race: null,
@@ -38,7 +38,7 @@ const EMPTY: GamingTransactionInput = {
   state: null,
   state_id_number: null,
   state_winnings: null,
-  state_income_tax_withheld: 0,
+  state_income_tax_withheld: null,
   total_amount: null,
   notes: null,
 };

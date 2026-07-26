@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2, X, Printer, FileDown, ArrowLeft, DollarSign, History, ArrowUp, ArrowDown, ArrowUpDown, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import {
   listDebts,
   createDebt,
@@ -63,6 +64,8 @@ export default function DebtMonitoring() {
   const [loadingBulkHistory, setLoadingBulkHistory] = useState(false);
   const [calendarModalOpen, setCalendarModalOpen] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [debtToDelete, setDebtToDelete] = useState<Debt | null>(null);
 
   // Sorting state
   const [sortField, setSortField] = useState<keyof Debt | null>(null);

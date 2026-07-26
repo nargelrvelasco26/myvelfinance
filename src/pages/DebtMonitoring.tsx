@@ -305,21 +305,34 @@ export default function DebtMonitoring() {
     }
   }
 
-  async function handleDelete(d: Debt) {
-    if (!window.confirm(`Delete ${d.origin}${d.merchant ? ` — ${d.merchant}` : ''}?`))
-      return;
+  function openDeleteConfirm(d: Debt) {
+    setDebtToDelete(d);
+    setDeleteConfirmOpen(true);
+  }
+
+  async function confirmDelete() {
+    if (!debtToDelete) return;
+
     try {
-      await deleteDebt(d.id);
-      toast.success('Debt deleted');
-      setDebts((prev) => prev.filter((x) => x.id !== d.id));
+      await deleteDebt(debtToDelete.id);
+      toast.success('Debt deleted successfully');
+      setDebts((prev) => prev.filter((x) => x.id !== debtToDelete.id));
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        next.delete(d.id);
+        next.delete(debtToDelete.id);
         return next;
       });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Delete failed');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setDebtToDelete(null);
     }
+  }
+
+  function cancelDelete() {
+    setDeleteConfirmOpen(false);
+    setDebtToDelete(null);
   }
 
   const totals = useMemo(
@@ -906,7 +919,7 @@ export default function DebtMonitoring() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(d);
+                            openDeleteConfirm(d);
                           }}
                           className="rounded p-1.5 text-red-600 hover:bg-red-50 transition"
                           title="Delete"
@@ -1003,7 +1016,7 @@ export default function DebtMonitoring() {
                         <Pencil size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(d)}
+                        onClick={() => openDeleteConfirm(d)}
                         className="p-2 rounded text-red-600 hover:bg-red-50 transition"
                         title="Delete"
                       >
@@ -1153,6 +1166,17 @@ export default function DebtMonitoring() {
             getFirstDayOfMonth={getFirstDayOfMonth}
           />
         )}
+
+        <ConfirmDialog
+          isOpen={deleteConfirmOpen}
+          title="Delete Debt Record"
+          message={`Are you sure you want to delete "${debtToDelete?.origin}${debtToDelete?.merchant ? ` — ${debtToDelete.merchant}` : ''}"? This action cannot be undone.`}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+          variant="danger"
+        />
       </div>
     </div>
   );

@@ -242,16 +242,30 @@ export default function Budget() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this transaction?')) return;
+  function openDeleteConfirm(transaction: BudgetTransaction) {
+    setTransactionToDelete(transaction);
+    setDeleteConfirmOpen(true);
+  }
+
+  async function confirmDelete() {
+    if (!transactionToDelete) return;
+
     try {
-      await deleteBudgetTransaction(id);
-      toast.success('Transaction deleted!');
+      await deleteBudgetTransaction(transactionToDelete.id);
+      toast.success('Transaction deleted successfully');
       refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to delete');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setTransactionToDelete(null);
     }
-  };
+  }
+
+  function cancelDelete() {
+    setDeleteConfirmOpen(false);
+    setTransactionToDelete(null);
+  }
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {

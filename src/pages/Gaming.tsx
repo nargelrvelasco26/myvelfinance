@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2, X, Printer, FileDown, ArrowLeft, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import {
   listGamingTransactions,
   createGamingTransaction,
@@ -68,6 +69,8 @@ export default function Gaming() {
   // Sorting state
   const [sortField, setSortField] = useState<keyof GamingTransaction | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<GamingTransaction | null>(null);
 
   // Column widths state
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {

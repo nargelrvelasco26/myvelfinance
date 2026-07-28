@@ -742,7 +742,7 @@ export default function Budget() {
                             <Pencil size={16} className="text-blue-600" />
                           </button>
                           <button
-                            onClick={() => handleDelete(t.id)}
+                            onClick={() => openDeleteConfirm(t)}
                             className="p-1 hover:bg-red-100 rounded transition"
                             title="Delete"
                           >
@@ -811,7 +811,7 @@ export default function Budget() {
                       <Pencil size={18} />
                     </button>
                     <button
-                      onClick={() => handleDelete(t.id)}
+                      onClick={() => openDeleteConfirm(t)}
                       className="p-2 rounded text-red-600 hover:bg-red-50 transition"
                       title="Delete"
                     >
@@ -866,6 +866,17 @@ export default function Budget() {
             onSave={handleSave}
           />
         )}
+
+        <ConfirmDialog
+          isOpen={deleteConfirmOpen}
+          title="Delete Transaction"
+          message={`Are you sure you want to delete this ${transactionToDelete?.transaction?.toLowerCase()} transaction "${transactionToDelete?.description || 'Untitled'}"? This action cannot be undone.`}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+          variant="danger"
+        />
       </div>
     </div>
   );
